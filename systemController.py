@@ -25,7 +25,7 @@ strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, 
 
 strip.begin()
 
-
+#Initialize processes for calculating light color and setting lights
 t = mp.Process(target = lights.getTopRight, args = (topRow, rightCol, output))
 b = mp.Process(target = lights.getBotLeft, args = (botRow, leftCol, output))
 s = mp.Process(target = lights.setColors, args = (strip, output, LED_COUNT))
@@ -34,6 +34,7 @@ t.start()
 b.start()
 s.start()
 
+#initialize camera
 with picamera.PiCamera() as camera:
     camera.resolution = (288, 176)
     camera.framerate = 30

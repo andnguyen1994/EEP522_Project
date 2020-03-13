@@ -7,9 +7,11 @@ import picamera
 import picamera.array
 import numpy as np
 
+#number of lights on each side
 TOP_LIGHTS = 35
 SIDE_LIGHTS = 21
 
+#pixels of edges of image
 CAMERA_TOP = 51
 CAMERA_BOT = 169
 CAMERA_LT = 31
@@ -23,7 +25,7 @@ LEFT_COUNT = int(78/3)
 BOT_COUNT = CAMERA_RB - CAMERA_LB
 TOTAL_LIGHTS = (TOP_LIGHTS+SIDE_LIGHTS)*2
 
-
+#data structure to store pixel
 class Pixel(Structure) :
     _fields_=[('r',c_int), ('g',c_int), ('b', c_int)]
 
@@ -36,10 +38,7 @@ class MyAnalysis(picamera.array.PiRGBAnalysis):
         self.rightCol = rightCol
 
     def analyse(self, a):
-        #x = a[CAMERA_TOP:CAMERA_BOT,CAMERA_RT:CAMERA_RB]
-        #print(x, np.fliplr(x))
-        #print(len(x))
-
+        #get 
         self.topRow[:] = a[CAMERA_TOP,CAMERA_LT:CAMERA_RT].flatten()[:]
         self.botRow[:] = a[CAMERA_BOT ,CAMERA_LB:CAMERA_RB].flatten()[:]
         #print(len(np.diagonal((a[80:175,7:50])).flatten()))
@@ -54,14 +53,11 @@ def getTopRight(topInput, rightInput, output) :
         #print(rightInput[0], rightInput[35], rightInput[70])
         for i in range(0,TOP_LIGHTS) :
             val = int((TOP_COUNT)/(0.0+TOP_LIGHTS) * i)*3
-            #print(val, topInput[val], topInput[val+1], topInput[val+2])
-            output[i+SIDE_LIGHTS].r = int(topInput[val])
-            output[i+SIDE_LIGHTS].g = int(topInput[val+1])
-            output[i+SIDE_LIGHTS].b = int(topInput[val+2])
-            '''output[i+SIDE_LIGHTS].r = int((topInput[val]+topInput[val+1])/2)
+
+            output[i+SIDE_LIGHTS].r = int((topInput[val]+topInput[val+1])/2)
             output[i+SIDE_LIGHTS].g = int((topInput[val+TOP_COUNT]+topInput[val+TOP_COUNT+1])/2)
             output[i+SIDE_LIGHTS].b = int((topInput[val+(2*TOP_COUNT)]+topInput[val+(2*TOP_COUNT+1)])/2)
-            print(topInput[val], " ",topInput[val+TOP_COUNT], " ", topInput[val+(2*TOP_COUNT)])'''
+            print(topInput[val], " ",topInput[val+TOP_COUNT], " ", topInput[val+(2*TOP_COUNT)])
         for i in range(SIDE_LIGHTS) :
             output[i+TOP_LIGHTS+SIDE_LIGHTS].r = int(rightInput[i])
             output[i+TOP_LIGHTS+SIDE_LIGHTS].g = int(rightInput[i+RIGHT_COUNT])
@@ -70,13 +66,9 @@ def getBotLeft(botInput, leftInput, output) :
     while True :
         for i in range(0,TOP_LIGHTS) :
             val = int((BOT_COUNT)/(0.0+TOP_LIGHTS) * i)*3
-            #print(val, botInput[val], botInput[val+1], botInput[val+2])
-            output[TOTAL_LIGHTS-1-i].r = int(botInput[val])
-            output[TOTAL_LIGHTS-1-i].g = int(botInput[val+1])
-            output[TOTAL_LIGHTS-1-i].b = int(botInput[val+2])
-            '''output[TOTAL_LIGHTS-1-i].r = int((botInput[val]+botInput[val+3]+botInput[val+6])/3)
+            output[TOTAL_LIGHTS-1-i].r = int((botInput[val]+botInput[val+3]+botInput[val+6])/3)
             output[TOTAL_LIGHTS-1-i].g = int((botInput[val+1]+botInput[val+BOT_COUNT+4]+botInput[val+BOT_COUNT+7])/3)
-            output[TOTAL_LIGHTS-1-i].b = int((botInput[val+2]+botInput[val+5]+botInput[val+8])/3)'''
+            output[TOTAL_LIGHTS-1-i].b = int((botInput[val+2]+botInput[val+5]+botInput[val+8])/3)
     
         for i in range(0,SIDE_LIGHTS) :
             output[i].r = int(leftInput[i])
